@@ -6,6 +6,8 @@ import Filters from './components/Filters'
 class App extends Component {
   state = {
     data: [],
+    womenMoreData: [],
+    menMoreData: [],
     pageSize: 24,
     totalPages: 0,
     currentPage: 1,
@@ -34,12 +36,17 @@ class App extends Component {
     const url = 'https://data.seattle.gov/api/views/cf52-s8er/rows.json?api_key=SCC1c0Cove7ypmBeuf3dTX2WZOk6qEfCAki6MoNi'
     fetch(url)
       .then(res => res.json())
-        .then(data => this.setState({ data: data.data, totalPages: Math.ceil(data.data.length / 25)}))
+        .then(data => this.setState({
+          data: data.data,
+          totalPages: Math.ceil(data.data.length / 25),
+          womenMoreData: data.data.filter(item => item[9] > item[12]),
+          menMoreData: data.data.filter(item => item[12]> item[9])
+        }))
   }
 
   sortResults = (column) => {
     this.setState({
-        data: column === 'diff' 
+        data: column === 'diff'
           ? this.state.data.sort((a, b) => (
             this.state.sort[column] === 'asc'
               ? (a[9] - a[12]) - (b[9] - b[12])
@@ -77,21 +84,27 @@ class App extends Component {
   }
 
   womenMakesMore = () => {
-    const womenMoreArr = this.state.data.filter(item => item[9] > item[12]);
-    this.setState({data: womenMoreArr, totalPages: Math.ceil(womenMoreArr.length / 25), womenMoreFilter: true, menMoreFilter: false})
+    this.setState({
+      totalPages: Math.ceil(this.state.womenMoreData.length / 25),
+      womenMoreFilter: !this.state.womenMoreFilter,
+      menMoreFilter: false
+    })
   }
 
   menMakesMore = () => {
-    const menMoreArr = this.state.data.filter(item => item[12] > item[9]);
-    this.setState({data: menMoreArr, totalPages: Math.ceil(menMoreArr.length / 25), womenMoreFilter: false, menMoreFilter: true})
+    this.setState({
+      totalPages: Math.ceil(this.state.menMoreData.length / 25),
+      womenMoreFilter: false,
+      menMoreFilter: !this.state.menMoreFilter
+    })
   }
 
   render() {
     return (
       <div>
-        <Filters 
+        <Filters
           womenMakesMore={() => this.womenMakesMore()}
-          menMakesMore={() => this.menMakesMore()} 
+          menMakesMore={() => this.menMakesMore()}
         />
         <table>
           <tbody>
@@ -101,10 +114,15 @@ class App extends Component {
               <th className="sortable" onClick={() => this.sortResults(`male`)}>Avg. Male Wage</th>
               <th className="sortable" onClick={() => this.sortResults(`diff`)}>Difference</th>
             </tr>
-            {this.state.data.map((item, i) => i >= this.state.pagination.start && i <= this.state.pagination.end && <Row key={i} data={item} />)}
+            {(!this.state.menMoreFilter && !this.state.womenMoreFilter) &&
+              this.state.data.map((item, i) => i >= this.state.pagination.start && i <= this.state.pagination.end && <Row key={i} data={item} />)}
+            {(!this.state.menMoreFilter && this.state.womenMoreFilter) &&
+              this.state.womenMoreData.map((item, i) => i >= this.state.pagination.start && i <= this.state.pagination.end && <Row key={i} data={item} />)}
+            {(this.state.menMoreFilter && !this.state.womenMoreFilter) &&
+              this.state.menMoreData.map((item, i) => i >= this.state.pagination.start && i <= this.state.pagination.end && <Row key={i} data={item} />)}
           </tbody>
         </table>
-        
+
         <Pagination totalPages={this.state.totalPages}
                     currentPage={this.state.currentPage}
                     nextPage={() => {this.nextPage()}}
