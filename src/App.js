@@ -21,10 +21,16 @@ class App extends Component {
     columnIndex: {
       female: 9,
       male: 12
-    }
+    },
+    womenMoreFilter: false,
+    menMoreFilter: false
   }
 
   componentDidMount(){
+   this.getInitialState();
+  }
+
+  getInitialState = () => {
     const url = 'https://data.seattle.gov/api/views/cf52-s8er/rows.json?api_key=SCC1c0Cove7ypmBeuf3dTX2WZOk6qEfCAki6MoNi'
     fetch(url)
       .then(res => res.json())
@@ -70,10 +76,23 @@ class App extends Component {
     })
   }
 
+  womenMakesMore = () => {
+    const womenMoreArr = this.state.data.filter(item => item[9] > item[12]);
+    this.setState({data: womenMoreArr, totalPages: Math.ceil(womenMoreArr.length / 25), womenMoreFilter: true, menMoreFilter: false})
+  }
+
+  menMakesMore = () => {
+    const menMoreArr = this.state.data.filter(item => item[12] > item[9]);
+    this.setState({data: menMoreArr, totalPages: Math.ceil(menMoreArr.length / 25), womenMoreFilter: false, menMoreFilter: true})
+  }
+
   render() {
     return (
       <div>
-        <Filters />
+        <Filters 
+          womenMakesMore={() => this.womenMakesMore()}
+          menMakesMore={() => this.menMakesMore()} 
+        />
         <table>
           <tbody>
             <tr>
