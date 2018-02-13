@@ -7,6 +7,8 @@ class Pagination extends Component {
         {this.props.currentPage > 1 &&
           <button onClick={this.props.prevPage}>Previous Page</button>
         }
+        
+        <p>Page {this.props.currentPage} of {this.props.totalPages}</p>
 
         {this.props.currentPage < this.props.totalPages &&
           <button onClick={this.props.nextPage}>Next Page</button>

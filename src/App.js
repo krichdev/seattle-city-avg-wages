@@ -6,12 +6,12 @@ import Filters from './components/Filters'
 class App extends Component {
   state = {
     data: [],
-    pageSize: 25,
+    pageSize: 24,
     totalPages: 0,
     currentPage: 1,
     pagination: {
-      start: 1,
-      end: 25
+      start: 0,
+      end: 24
     },
     sort: {
       female: 'asc',
@@ -82,8 +82,7 @@ class App extends Component {
               <th className="sortable" onClick={() => this.sortResults(`male`)}>Avg. Male Wage</th>
               <th className="sortable" onClick={() => this.sortResults(`diff`)}>Difference</th>
             </tr>
-            {this.state.data.filter(row => row[0] >= this.state.pagination.start && row[0] <= this.state.pagination.end)
-              .map((row, i) => <Row key={i} data={row} />)}
+            {this.state.data.map((item, i) => i >= this.state.pagination.start && i <= this.state.pagination.end && <Row key={i} data={item} />)}
           </tbody>
         </table>
         
