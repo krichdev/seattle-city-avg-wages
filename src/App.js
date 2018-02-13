@@ -39,8 +39,8 @@ class App extends Component {
         .then(data => this.setState({
           data: data.data,
           totalPages: Math.ceil(data.data.length / 25),
-          womenMoreData: data.data.filter(item => item[9] > item[12]),
-          menMoreData: data.data.filter(item => item[12]> item[9])
+          womenMoreData: data.data.filter(item => item[12] && item[9] > item[12]),
+          menMoreData: data.data.filter(item => item[9] && item[12]> item[9])
         }))
   }
 
