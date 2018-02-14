@@ -45,14 +45,27 @@ class App extends Component {
   }
 
   sortResults = (column) => {
+    let currentFilterData;
+    let currentFilterKey;
+    if(this.state.womenMoreFilter && !this.state.menMoreFilter){
+      currentFilterData = this.state.womenMoreData;
+      currentFilterKey = 'womenMoreData'
+    }else if (!this.state.womenMoreFilter && this.state.menMoreFilter){
+      currentFilterData = this.state.menMoreData;
+      currentFilterKey = 'menMoreData'
+    }else {
+      currentFilterData = this.state.data;
+      currentFilterKey = 'data'
+    }
+    
     this.setState({
-        data: column === 'diff'
-          ? this.state.data.sort((a, b) => (
+        currentFilterKey : column === 'diff'
+          ? currentFilterData.sort((a, b) => (
             this.state.sort[column] === 'asc'
               ? (a[9] - a[12]) - (b[9] - b[12])
               : (b[9] - b[12]) - (a[9] - a[12])
           ))
-          : this.state.data.sort((a, b) => (
+          : currentFilterData.sort((a, b) => (
             this.state.sort[column] === 'asc'
             ? a[this.state.columnIndex[column]] - b[this.state.columnIndex[column]]
             : b[this.state.columnIndex[column]] - a[this.state.columnIndex[column]]
@@ -110,9 +123,9 @@ class App extends Component {
           <tbody>
             <tr>
               <th>Job Title</th>
-              <th className="sortable" onClick={() => this.sortResults(`female`)}>Avg. Female Wage</th>
-              <th className="sortable" onClick={() => this.sortResults(`male`)}>Avg. Male Wage</th>
-              <th className="sortable" onClick={() => this.sortResults(`diff`)}>Difference</th>
+              <th className="sortable" onClick={() => this.sortResults('female')}>Avg. Female Wage</th>
+              <th className="sortable" onClick={() => this.sortResults('male')}>Avg. Male Wage</th>
+              <th className="sortable" onClick={() => this.sortResults('diff')}>Difference</th>
             </tr>
             {(!this.state.menMoreFilter && !this.state.womenMoreFilter) &&
               this.state.data.map((item, i) => i >= this.state.pagination.start && i <= this.state.pagination.end && <Row key={i} data={item} />)}
