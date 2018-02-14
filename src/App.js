@@ -85,7 +85,7 @@ class App extends Component {
 
   womenMakesMore = () => {
     this.setState({
-      totalPages: Math.ceil(this.state.womenMoreData.length / 25),
+      totalPages: !this.state.womenMoreFilter ? Math.ceil(this.state.womenMoreData.length / 25) : Math.ceil(this.state.data.length / 25),
       womenMoreFilter: !this.state.womenMoreFilter,
       menMoreFilter: false
     })
@@ -93,7 +93,7 @@ class App extends Component {
 
   menMakesMore = () => {
     this.setState({
-      totalPages: Math.ceil(this.state.menMoreData.length / 25),
+      totalPages: !this.state.menMoreFilter ? Math.ceil(this.state.menMoreData.length / 25) : Math.ceil(this.state.data.length / 25),
       womenMoreFilter: false,
       menMoreFilter: !this.state.menMoreFilter
     })
