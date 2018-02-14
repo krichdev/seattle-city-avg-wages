@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import Row from './components/Row';
-import Pagination from './components/Pagination'
-import Filters from './components/Filters'
+import Pagination from './components/Pagination';
+import Filters from './components/Filters';
+
 
 class App extends Component {
   state = {
@@ -44,22 +45,36 @@ class App extends Component {
         }))
   }
 
-  sortResults = (column) => {
+  getCurrentFilterData = () => {
     let currentFilterData;
-    let currentFilterKey;
     if(this.state.womenMoreFilter && !this.state.menMoreFilter){
       currentFilterData = this.state.womenMoreData;
-      currentFilterKey = 'womenMoreData'
     }else if (!this.state.womenMoreFilter && this.state.menMoreFilter){
       currentFilterData = this.state.menMoreData;
-      currentFilterKey = 'menMoreData'
     }else {
       currentFilterData = this.state.data;
+    }
+    return currentFilterData;
+  }
+  
+  getCurrentFilterKey = () => {
+    let currentFilterKey;
+    if(this.state.womenMoreFilter && !this.state.menMoreFilter){
+      currentFilterKey = 'womenMoreData'
+    }else if (!this.state.womenMoreFilter && this.state.menMoreFilter){
+      currentFilterKey = 'menMoreData'
+    }else {
       currentFilterKey = 'data'
     }
+    return currentFilterKey;
+  }
+
+  sortResults = (column) => {
+    let currentFilterData = this.getCurrentFilterData();
+    let currentFilterKey = this.getCurrentFilterKey();
     
     this.setState({
-        currentFilterKey : column === 'diff'
+      currentFilterKey : column === 'diff'
           ? currentFilterData.sort((a, b) => (
             this.state.sort[column] === 'asc'
               ? (a[9] - a[12]) - (b[9] - b[12])
@@ -112,12 +127,40 @@ class App extends Component {
     })
   }
 
+  handlePayDifference = (qty) => {
+    let currentFilterKey = this.getCurrentFilterKey();
+    
+    if(currentFilterKey === 'womenMoreData'){
+      this.setState({
+        womenMoreData: this.state.womenMoreData.filter(job => (job[9] - job[12]) >= qty)
+      })
+    }else if (currentFilterKey === 'menMoreData'){
+      this.setState({
+        menMoreData: this.state.menMoreData.filter(job => (job[12] - job[9]) >= qty)
+      })
+    }else {
+      this.setState({
+        data: this.state.data.filter(job => {
+          job[9] > job[12] 
+          ? (job[9] - job[12]) >= qty 
+          : (job[12] - job[9]) >= qty
+        })
+      })
+    }
+
+  }
+
+
+
   render() {
     return (
-      <div>
+      <div className='App'>
         <Filters
           womenMakesMore={() => this.womenMakesMore()}
           menMakesMore={() => this.menMakesMore()}
+          onDifferenceEnter={this.handlePayDifference}
+          womenMoreFilter={this.state.womenMoreFilter}
+          menMoreFilter={this.state.menMoreFilter}
         />
         <table>
           <tbody>
