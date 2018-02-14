@@ -16,4 +16,4 @@ Click on either of the filter buttons on the top, or enter a minimum price diffe
 * `npm install` or `yarn`
 * `npm start` or `yarn start`
 
-View deployed app at (http://www.helloimkyle.com/seattle-city-avg-wages)
+View deployed app at [here](http://www.helloimkyle.com/seattle-city-avg-wages)
